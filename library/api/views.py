@@ -78,11 +78,12 @@ def add_book_to_library(request):
     if request.method == 'POST':
         json_body = JSONParser().parse(request)
 
+        library = Library.objects.get(library_id=json_body['library_id'])
         books = Book.objects.create(
             author=json_body['author'],
             title=json_body['title'],
             genre=json_body['genre'],
-            library_id=json_body['library_id']
+            library_id=library
         )
         serializer = BookSerializer(books, many=False)
 
