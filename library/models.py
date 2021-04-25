@@ -7,7 +7,8 @@ from django.db import models
 class Book(models.Model):
     book_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=40, null=True)
-    author = models.CharField(max_length=300, null=True)
+    author = models.CharField(max_length=40, null=True)
+    genre = models.CharField(max_length=40, null=True)
     lease_expiration_date = models.DateField(null=True)
     current_owner = models.CharField(max_length=300, null=True)
     library_id = models.OneToOneField("Library", on_delete=models.DO_NOTHING)

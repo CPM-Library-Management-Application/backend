@@ -9,10 +9,32 @@ from .serializers import BookSerializer, LibrarySerializer
 @api_view(['GET', ])
 def books_view(request, library_id):
     if request.method == 'GET':
-        books = Book.objects.filter(library_id=library_id)
+        params = request.query_params
+        author = params.get('author', None)
+        genre = params.get('genre', None)
+
+        if author is None and genre is None:
+            books = Book.objects.filter(library_id=library_id)
+        elif author is not None and genre is None:
+            books = Book.objects.filter(library_id=library_id, author=author)
+        elif author is None and genre is not None:
+            books = Book.objects.filter(library_id=library_id, genre=genre)
+        elif author is not None and genre is not None:
+            books = Book.objects.filter(library_id=library_id, author=author, genre=genre)
+
         serializer = BookSerializer(books, many=True)
 
         return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['GET', ])
+def book_view(request, book_id):
+    if request.method == 'GET':
+        pass
+        # books = Book.objects.filter(library_id=library_id)
+        # serializer = BookSerializer(books, many=True)
+
+        # return JsonResponse(serializer.data, safe=False)
 
 
 @api_view(['GET', 'POST'])
