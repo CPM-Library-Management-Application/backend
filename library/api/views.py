@@ -4,6 +4,7 @@ from django.http import JsonResponse
 
 from ..models import Book, Library
 from .serializers import BookSerializer, LibrarySerializer
+import datetime
 
 
 @api_view(['GET', ])
@@ -28,13 +29,64 @@ def books_view(request, library_id):
 
 
 @api_view(['GET', ])
-def book_view(request, book_id):
+def book_view(request, id):
     if request.method == 'GET':
-        pass
-        # books = Book.objects.filter(library_id=library_id)
-        # serializer = BookSerializer(books, many=True)
+        books = Book.objects.get(book_id=id)
+        serializer = BookSerializer(books, many=False)
 
-        # return JsonResponse(serializer.data, safe=False)
+        return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['POST', ])
+def reserve_book(request, id):
+    if request.method == 'POST':
+        json_body = JSONParser().parse(request)
+
+        book = Book.objects.get(book_id=id)
+        book.current_owner = json_body['user']
+        book.save()
+        serializer = BookSerializer(book, many=False)
+
+        return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['POST', ])
+def lease_book(request, id):
+    if request.method == 'POST':
+        book = Book.objects.get(book_id=id)
+        book.lease_expiration_date = datetime.date.today() + datetime.timedelta(days=14)
+        book.save()
+        serializer = BookSerializer(book, many=False)
+
+        return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['POST', ])
+def return_book(request, id):
+    if request.method == 'POST':
+        book = Book.objects.get(book_id=id)
+        book.current_owner = None
+        book.lease_expiration_date = None
+        book.save()
+        serializer = BookSerializer(book, many=False)
+
+        return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['POST', ])
+def add_book_to_library(request):
+    if request.method == 'POST':
+        json_body = JSONParser().parse(request)
+
+        books = Book.objects.create(
+            author=json_body['author'],
+            title=json_body['title'],
+            genre=json_body['genre'],
+            library_id=json_body['library_id']
+        )
+        serializer = BookSerializer(books, many=False)
+
+        return JsonResponse(serializer.data, safe=False)
 
 
 @api_view(['GET', 'POST'])

@@ -10,4 +10,4 @@ class LibraryDisplay(admin.ModelAdmin):
 
 @admin.register(Book)
 class BookDisplay(admin.ModelAdmin):
-    list_display = ('author', 'title')
+    list_display = ('book_id', 'author', 'title')
