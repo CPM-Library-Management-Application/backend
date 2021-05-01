@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.parsers import JSONParser
 from django.http import JsonResponse
+from django.conf import settings
 
 from ..models import Book, Library
 from .serializers import BookSerializer, LibrarySerializer
@@ -11,17 +12,20 @@ import datetime
 def books_view(request, library_id):
     if request.method == 'GET':
         params = request.query_params
-        author = params.get('author', None)
-        genre = params.get('genre', None)
+        query_param = params['query']
 
-        if author is None and genre is None:
-            books = Book.objects.filter(library_id=library_id)
-        elif author is not None and genre is None:
-            books = Book.objects.filter(library_id=library_id, author=author)
-        elif author is None and genre is not None:
-            books = Book.objects.filter(library_id=library_id, genre=genre)
-        elif author is not None and genre is not None:
-            books = Book.objects.filter(library_id=library_id, author=author, genre=genre)
+        books = Book.objects.filter(library_id=library_id, title__contains=query_param)
+        # author = params.get('author', None)
+        # genre = params.get('genre', None)
+        #
+        # if author is None and genre is None:
+        #     books = Book.objects.filter(library_id=library_id)
+        # elif author is not None and genre is None:
+        #     books = Book.objects.filter(library_id=library_id, author=author)
+        # elif author is None and genre is not None:
+        #     books = Book.objects.filter(library_id=library_id, genre=genre)
+        # elif author is not None and genre is not None:
+        #     books = Book.objects.filter(library_id=library_id, author=author, genre=genre)
 
         serializer = BookSerializer(books, many=True)
 
@@ -78,13 +82,30 @@ def add_book_to_library(request):
     if request.method == 'POST':
         json_body = JSONParser().parse(request)
 
+        root_path = settings.MEDIA_ROOT
+        import qrcode
+        # Link for website
+        # Creating an instance of qrcode
+
         library = Library.objects.get(library_id=json_body['library_id'])
         books = Book.objects.create(
             author=json_body['author'],
             title=json_body['title'],
             genre=json_body['genre'],
-            library_id=library
+            library_id=library,
         )
+        qr = qrcode.QRCode(
+            version=1,
+            box_size=10,
+            border=5)
+        qr.add_data(str(books.book_id))
+        qr.make(fit=True)
+        img = qr.make_image(fill='black', back_color='white')
+        img.save(root_path + "/books_qrcodes/qrcode" + str(books.book_id) + ".png")
+
+        books.qrcode = "/books_qrcodes/qrcode" + str(books.book_id) + ".png"
+        books.save()
+
         serializer = BookSerializer(books, many=False)
 
         return JsonResponse(serializer.data, safe=False)

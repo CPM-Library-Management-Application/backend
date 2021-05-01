@@ -5,7 +5,7 @@ from ..models import Book, Library
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ['book_id', 'title', 'author','genre', 'lease_expiration_date', 'current_owner']
+        fields = ['book_id', 'title', 'author','genre', 'lease_expiration_date', 'current_owner', 'qrcode']
 
 
 class LibrarySerializer(serializers.ModelSerializer):

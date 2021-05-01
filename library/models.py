@@ -12,6 +12,7 @@ class Book(models.Model):
     lease_expiration_date = models.DateField(null=True)
     current_owner = models.CharField(max_length=300, null=True)
     library_id = models.ForeignKey("Library", on_delete=models.DO_NOTHING)
+    qrcode = models.ImageField(null=True, upload_to="qr_codes")
 
     def __str__(self):
         return self.title
