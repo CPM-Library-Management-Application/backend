@@ -2,10 +2,19 @@ from rest_framework import serializers
 from ..models import Book, Library
 
 
+class LibraryOfBookSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Library
+        fields = '__all__'
+
+
 class BookSerializer(serializers.ModelSerializer):
+    library = LibraryOfBookSerializer(read_only=True)
+
     class Meta:
         model = Book
-        fields = ['book_id', 'title', 'author','genre', 'lease_expiration_date', 'current_owner', 'qrcode']
+        fields = ['book_id', 'title', 'author', 'genre', 'lease_expiration_date', 'current_owner', 'qrcode', 'library']
 
 
 class LibrarySerializer(serializers.ModelSerializer):

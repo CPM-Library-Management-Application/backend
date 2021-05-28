@@ -2,11 +2,26 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.parsers import JSONParser
 from django.http import JsonResponse
 from django.conf import settings
+from django.contrib.postgres.search import SearchVector
 
 from ..models import Book, Library
 from .serializers import BookSerializer, LibrarySerializer
 import datetime
 
+
+@api_view(['GET'])
+def search_book(request):
+    if request.method == 'GET':
+        params = request.query_params
+        query_param = params['query']
+        print(query_param)
+        books = Book.objects.annotate(
+            search=SearchVector('title', 'author', 'genre')
+        ).filter(search=query_param)
+
+        serializer = BookSerializer(books, many=True)
+
+        return JsonResponse(serializer.data, safe=False)
 
 @api_view(['GET', ])
 def books_view(request, library_id):
