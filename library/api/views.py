@@ -7,6 +7,7 @@ from django.contrib.postgres.search import SearchVector
 from ..models import Book, Library
 from .serializers import BookSerializer, LibrarySerializer
 import datetime
+import qrcode
 
 
 @api_view(['GET'])
@@ -98,9 +99,6 @@ def add_book_to_library(request):
         json_body = JSONParser().parse(request)
 
         root_path = settings.MEDIA_ROOT
-        import qrcode
-        # Link for website
-        # Creating an instance of qrcode
 
         library = Library.objects.get(library_id=json_body['library_id'])
         books = Book.objects.create(
@@ -122,8 +120,10 @@ def add_book_to_library(request):
         books.save()
 
         serializer = BookSerializer(books, many=False)
+        new_serializer = serializer.data
+        new_serializer['library_id'] = json_body['library_id']
 
-        return JsonResponse(serializer.data, safe=False)
+        return JsonResponse(new_serializer, safe=False)
 
 
 @api_view(['GET', 'POST'])
