@@ -10,11 +10,11 @@ class LibraryOfBookSerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
-    library = LibraryOfBookSerializer(read_only=True)
+    library_id = LibraryOfBookSerializer()
 
     class Meta:
         model = Book
-        fields = ['book_id', 'title', 'author', 'genre', 'lease_expiration_date', 'current_owner', 'qrcode', 'library']
+        fields = ['book_id', 'title', 'author', 'genre', 'lease_expiration_date', 'current_owner', 'qrcode', 'library_id']
 
 
 class LibrarySerializer(serializers.ModelSerializer):
