@@ -21,8 +21,8 @@ class Book(models.Model):
 class Library(models.Model):
     library_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=40, null=True)
-    x_coordinate = models.IntegerField(null=True)
-    y_coordinate = models.IntegerField(null=True)
+    x_coordinate = models.FloatField(null=True)
+    y_coordinate = models.FloatField(null=True)
     books = models.ManyToManyField(to="Book", related_name='books', blank=True)
 
     def __str__(self):
