@@ -10,7 +10,7 @@ class Book(models.Model):
     author = models.CharField(max_length=40, null=True)
     genre = models.CharField(max_length=40, null=True)
     lease_expiration_date = models.DateField(null=True)
-    current_owner = models.ForeignKey(to="account.User", related_name="user", blank=True, on_delete=models.CASCADE)
+    current_owner = models.ForeignKey(to="account.User", related_name="user", blank=True, on_delete=models.CASCADE, null=True)
     library_id = models.ForeignKey(to="Library", related_name="library", on_delete=models.DO_NOTHING)
     qrcode = models.ImageField(null=True, upload_to="qr_codes")
 
