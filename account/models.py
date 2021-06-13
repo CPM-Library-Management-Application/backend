@@ -40,8 +40,8 @@ class User(AbstractUser):
     def user_created(sender, instance, created, **kwargs):
         root_path = settings.MEDIA_ROOT
         session_key = vars(instance).get("session_key", None)
-
-        if created and session_key is None:  ## :)
+        print(sender)
+        if created and session_key is None and "User" in str(sender):  ## :)
             qr = qrcode.QRCode(
                     version=1,
                     box_size=10,
