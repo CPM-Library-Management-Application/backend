@@ -9,6 +9,7 @@ from .serializers import BookSerializer, LibrarySerializer
 import datetime
 import qrcode
 
+from account.models import User
 
 @api_view(['GET'])
 def search_book(request):
@@ -155,5 +156,15 @@ def library_view_by_id(request, library_id):
     if request.method == 'GET':
         libraries = Library.objects.get(library_id=library_id)
         serializer = LibrarySerializer(libraries, many=False)
+
+        return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['GET', ])
+def user_books(request, user_id):
+    if request.method == 'GET':
+        print(Book.objects.all())
+        books = Book.objects.filter(current_owner=user_id)
+        serializer = BookSerializer(books, many=True)
 
         return JsonResponse(serializer.data, safe=False)

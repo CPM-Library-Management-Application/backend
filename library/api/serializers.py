@@ -3,7 +3,6 @@ from ..models import Book, Library
 
 
 class LibraryOfBookSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Library
         fields = '__all__'
@@ -14,7 +13,8 @@ class BookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = ['book_id', 'title', 'author', 'genre', 'lease_expiration_date', 'current_owner', 'qrcode', 'library_id']
+        fields = ['book_id', 'title', 'author', 'genre', 'lease_expiration_date', 'current_owner', 'qrcode',
+                  'library_id']
 
 
 class LibrarySerializer(serializers.ModelSerializer):

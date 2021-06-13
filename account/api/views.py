@@ -73,3 +73,6 @@ class LogoutView(APIView):
         }
 
         return response
+
+
+
