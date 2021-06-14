@@ -23,6 +23,8 @@ def search_book(request):
             search=SearchVector('title', 'author', 'genre')
         ).filter(search=query_param)
 
+        if query_param == '':
+            books = Book.objects.all()
         serializer = BookSerializer(books, many=True)
 
         return JsonResponse(serializer.data, safe=False)
