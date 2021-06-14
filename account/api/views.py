@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from rest_framework.views import APIView
 from .serializer import UserSerializer
 from rest_framework.response import Response
@@ -73,6 +74,13 @@ class LogoutView(APIView):
         }
 
         return response
+
+
+class StaffView(APIView):
+    def get(self, request):
+        staff_users = User.objects.filter(is_staff=True)
+        serializer = UserSerializer(many=True)
+        return JsonResponse(serializer.data, safe=False)
 
 
 
