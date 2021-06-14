@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser
 import qrcode
 from django.conf import settings
 from django.dispatch import receiver
+from pathlib import Path
 
 
 class UserManager(models.Manager):
@@ -40,7 +41,9 @@ class User(AbstractUser):
     def user_created(sender, instance, created, **kwargs):
         root_path = settings.MEDIA_ROOT
         session_key = vars(instance).get("session_key", None)
-        print(sender)
+        print("Sender: ", sender)
+        print("Instance: ", instance)
+
         if created and session_key is None and "User" in str(sender):  ## :)
             qr = qrcode.QRCode(
                     version=1,
@@ -49,23 +52,12 @@ class User(AbstractUser):
             qr.add_data(str(instance.id))
             qr.make(fit=True)
             img = qr.make_image(fill='black', back_color='white')
+
+            path = Path(root_path + '/user_qrcodes/')
+            path.mkdir(parents=True, exist_ok=True)
+
             img.save(root_path + "/user_qrcodes/qrcode" + str(instance.id) + ".png")
 
             instance.qrcode = "/user_qrcodes/qrcode" + str(instance.id) + ".png"
             instance.save()
-    # def post_create(cls, sender, instance, created, *args, **kwargs):
-    #     root_path = settings.MEDIA_ROOT
-    #
-    #     print(sender, instance, created)
-    #
-    #     qr = qrcode.QRCode(
-    #         version=1,
-    #         box_size=10,
-    #         border=5)
-    # qr.add_data(str(books.book_id))
-    # qr.make(fit=True)
-    # img = qr.make_image(fill='black', back_color='white')
-    # img.save(root_path + "/books_qrcodes/qrcode" + str(books.book_id) + ".png")
 
-    # books.qrcode = "/books_qrcodes/qrcode" + str(books.book_id) + ".png"
-    # books.save()

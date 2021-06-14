@@ -8,7 +8,9 @@ from ..models import Book, Library
 from .serializers import BookSerializer, LibrarySerializer
 import datetime
 import qrcode
+from pathlib import Path
 
+import os
 from account.models import User
 
 @api_view(['GET'])
@@ -64,7 +66,7 @@ def reserve_book(request, id):
         json_body = JSONParser().parse(request)
 
         book = Book.objects.get(book_id=id)
-        book.current_owner = json_body['user']
+        book.current_owner = json_body['current_owner_id']
         book.save()
         serializer = BookSerializer(book, many=False)
 
@@ -115,6 +117,11 @@ def add_book_to_library(request):
         qr.add_data(str(books.book_id))
         qr.make(fit=True)
         img = qr.make_image(fill='black', back_color='white')
+
+        path = Path(root_path + '/books_qrcodes/')
+        path.mkdir(parents=True, exist_ok=True)
+
+
         img.save(root_path + "/books_qrcodes/qrcode" + str(books.book_id) + ".png")
 
         books.qrcode = "/books_qrcodes/qrcode" + str(books.book_id) + ".png"
