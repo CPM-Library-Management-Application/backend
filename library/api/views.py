@@ -68,7 +68,9 @@ def reserve_book(request, id):
         json_body = JSONParser().parse(request)
 
         book = Book.objects.get(book_id=id)
-        book.current_owner = json_body['current_owner_id']
+        current_owner_id = json_body['current_owner_id']
+        current_owner = User.objects.get(id=current_owner_id)
+        book.current_owner = current_owner
         book.save()
         serializer = BookSerializer(book, many=False)
 
